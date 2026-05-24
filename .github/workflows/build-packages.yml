@@ -1,0 +1,119 @@
+name: Build Packages
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  build:
+    name: Build for ${{ matrix.sdk }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        sdk: 
+          - openwrt-24.10
+          - openwrt-25.12
+    steps:
+      - name: Free disk space
+        uses: jlumbroso/free-disk-space@main
+        with:
+          # this might remove tools that are actually needed,
+          # if set to "true" but frees about 6 GB
+          tool-cache: false
+          
+          # all of these default to true, but feel free to set to
+          # "false" if necessary for your workflow
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          docker-images: true
+          swap-storage: true
+    
+      - name: Checkout source
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Initialize SDK Directories
+        id: init
+        run: |
+          mkdir -p ${{ github.workspace }}/artifacts
+          mkdir -p ${{ github.workspace }}/results
+          echo "status=success" >> $GITHUB_OUTPUT
+
+      - name: Build with SDK
+        id: building
+        if: steps.init.outputs.status == 'success' && !cancelled()
+        uses: openwrt/gh-action-sdk@main
+        env:
+          ARCH: x86_64-${{ matrix.sdk }}
+          ARTIFACTS_DIR: ${{ github.workspace }}/artifacts
+          PACKAGES: luci-app-nexttrace
+          NO_REFRESH_CHECK: true
+          V: s
+
+      - name: Find and move files
+        id: move_files
+        if: steps.init.outputs.status == 'success' && !cancelled()
+        run: |
+          set -euo pipefail
+          find ${{ github.workspace }}/artifacts \
+            -type f \( -name "luci-app-nexttrace-*" -or -name "luci-i18n-nexttrace-*" \) -and \( -name "*.ipk" -or -name "*.apk" \) \ 
+            -print0 | xargs -0 mv -t ${{ github.workspace }}/results
+          echo "=== Found package files ==="
+          ls -lh ${{ github.workspace }}/results
+          echo "==========================="
+          echo "status=success" >> $GITHUB_OUTPUT
+
+      - name: Rename files
+        id: rename_files
+        if: steps.move_files.outputs.status == 'success' && !cancelled()
+        run: |
+          set -euo pipefail
+          for file in ${{ github.workspace }}/results; do
+            full_name="$(basename "$file")"
+            file_name="${full_name%.*}"
+            file_ext="${full_name##*.}"
+            new_file="${file_name}_all.${file_ext}"
+
+            mv "$file" "${{ github.workspace }}/results/${new_file}"
+          done
+          echo "=== Package files ==="
+          ls -lh ${{ github.workspace }}/results
+          echo "==========================="
+          echo "status=success" >> $GITHUB_OUTPUT
+
+      - name: Upload Artifact
+        id: upload
+        if: steps.rename_files.outputs.status == 'success' && !cancelled()
+        uses: actions/upload-artifact@v7
+        with:
+          name: luci-app-nexttrace-${{ github.ref_name }}-${{ matrix.sdk }}-x86_64
+          path: |
+            ${{ github.workspace }}/results/*.ipk
+            ${{ github.workspace }}/results/*.apk
+          retention-days: 7
+          overwrite: true
+
+  release:
+    name: Publish release
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Download all build artifacts
+        uses: actions/download-artifact@v8
+        with:
+          path: ${{ github.workspace }}/release
+          merge-multiple: true
+
+      - name: Upload as release assets
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: ${{ github.ref_name }}
+          files: ${{ github.workspace }}/release/*
+          generate_release_notes: true
+          token: ${{ secrets.GITHUB_TOKEN }}
