@@ -1,0 +1,18 @@
+{
+	"luci-app-nexttrace": {
+		"description": "Grant UCI access for luci-app-nexttrace",
+		"read": {
+			"file": {
+                "/usr/bin/nexttrace": [ "exec" ],
+				"/tmp/log/nexttrace.log": [ "read" ]
+            },
+			"ubus": {
+				"service": [ "list" ]
+			},
+			"uci": [ "luci-nexttrace" ]
+		},
+		"write": {
+			"uci": [ "luci-nexttrace" ]
+		}
+	}
+}

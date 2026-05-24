@@ -1,0 +1,24 @@
+msgid ""
+msgstr ""
+"Language: zh_Hans\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+
+msgid "Unknow"
+msgstr "未知"
+
+msgid "Proc Status"
+msgstr "Proc 状态"
+
+msgid "Exited"
+msgstr "已退出"
+
+msgid "Open NextTrace WebUI"
+msgstr "跳转到 NextTrace WebUI"
+
+msgid "[Empty Log File]"
+msgstr "[日志文件为空]"
+
+msgid "[Log File Not Found]"
+msgstr "[找不到日志文件]"
