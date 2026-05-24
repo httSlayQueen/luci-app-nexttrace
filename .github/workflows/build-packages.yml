@@ -62,7 +62,7 @@ jobs:
         if: steps.init.outputs.status == 'success' && !cancelled()
         run: |
           set -euo pipefail
-          find ${{ github.workspace }}/artifacts -type f \( -name 'luci-app-nexttrace-*' -or -name 'luci-i18n-nexttrace-*' \) -and \( -name '*.ipk' -or -name '*.apk' \) -print0 | xargs -0 mv -t ${{ github.workspace }}/results
+          find ${{ github.workspace }}/artifacts -type f \( -name 'luci-app-nexttrace*' -or -name 'luci-i18n-nexttrace*' \) -and \( -name '*.ipk' -or -name '*.apk' \) -print0 | xargs -0 mv -t ${{ github.workspace }}/results
           echo "=== Found package files ==="
           ls -lh ${{ github.workspace }}/results
           echo "==========================="
@@ -73,7 +73,7 @@ jobs:
         if: steps.move_files.outputs.status == 'success' && !cancelled()
         run: |
           set -euo pipefail
-          for file in ${{ github.workspace }}/results; do
+          for file in ${{ github.workspace }}/results/*; do
             full_name="$(basename "$file")"
             file_name="${full_name%.*}"
             file_ext="${full_name##*.}"
