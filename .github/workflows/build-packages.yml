@@ -52,6 +52,7 @@ jobs:
         env:
           ARCH: x86_64-${{ matrix.sdk }}
           ARTIFACTS_DIR: ${{ github.workspace }}/artifacts
+          FEED_DIR: ${{ github.workspace }}/..
           PACKAGES: luci-app-nexttrace
           NO_REFRESH_CHECK: true
           V: s
