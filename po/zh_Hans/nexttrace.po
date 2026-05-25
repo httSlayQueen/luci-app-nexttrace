@@ -8,8 +8,8 @@ msgstr ""
 msgid "Unknow"
 msgstr "未知"
 
-msgid "Proc Status"
-msgstr "Proc 状态"
+msgid "Service Status"
+msgstr "服务状态"
 
 msgid "Exited"
 msgstr "已退出"
@@ -17,8 +17,14 @@ msgstr "已退出"
 msgid "Open NextTrace WebUI"
 msgstr "跳转到 NextTrace WebUI"
 
-msgid "[Empty Log File]"
-msgstr "[日志文件为空]"
+msgid "Service Switch"
+msgstr "服务开关"
 
-msgid "[Log File Not Found]"
-msgstr "[找不到日志文件]"
+msgid "Stop the service after your works finished in WebUI, or it would request the PoW provider every second."
+msgstr "请在使用完WebUI后【停止】服务，否则它将向PoW服务器每秒请求一次."
+
+msgid "[Dooh! Empty Log File]"
+msgstr "[刀！日志文件为空]"
+
+msgid "[Dooh! Log File Not Found]"
+msgstr "[刀！找不到日志文件]"

@@ -1,7 +1,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME          := luci-app-nexttrace
-PKG_VERSION       := 0.1.1
+PKG_VERSION       := 0.1.2
 PKG_RELEASE       := 1
 PKG_URL           := https://github.com/httSlayQueen/luci-app-nexttrace
 PKG_MAINTAINER    := HTT <morgana314@qq.com>

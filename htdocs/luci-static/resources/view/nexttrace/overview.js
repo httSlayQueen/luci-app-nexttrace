@@ -4,6 +4,7 @@
 'require fs';
 'require uci';
 'require form';
+'require ui';
 
 
 function checkWebuiService() {
@@ -20,7 +21,7 @@ function checkWebuiService() {
 
 async function renderWebuiStatus() {
     const webuiStatus = await checkWebuiService();
-    let element = E('text', { id: 'webui' });
+    let element = E('text');
 
     element.style.color = 'red';
     element.textContent = _('Exited');
@@ -37,12 +38,13 @@ async function renderWebuiBtn(section) {
     let o;
 
     if (webuiStatus) {
-            o = section.option(form.Button, '_webui', _('WebUI'));
-            o.inputtitle = _('Open NextTrace WebUI');
-            o.onclick = function() {
-                return openWebUI();
-            };
-        }
+        o = section.option(form.Button, '_webui', _('WebUI'));
+        o.inputtitle = _('Open NextTrace WebUI');
+        o.inputstyle = 'positive';
+        o.onclick = function() {
+            return openWebUI();
+        };
+    }
 
     return o;
 }
@@ -62,6 +64,7 @@ async function openWebUI() {
 
     return Promise.resolve();
 }
+
 
 return view.extend({
     load: function () {
@@ -89,7 +92,7 @@ return view.extend({
         };
         o.write = function () { };
 
-        o = s.option(form.DummyValue, '_status', _('Proc Status'));
+        o = s.option(form.DummyValue, '_status', _('Service Status'));
         o.readonly = true;
         o.rawhtml = true;
         o.load = function () {
@@ -102,8 +105,26 @@ return view.extend({
         s = m.section(form.TypedSection, 'config', _('Configure'));
         s.anonymous = true;
 
-        o = s.option(form.Flag, 'enabled', _('Enable'));
-        o.rmempty=false;
+        o = s.option(form.Button, 'enabled', _('Service Switch'), 
+            _('Stop the service after your works finished in WebUI, or it would request the PoW provider every second.')
+        );
+        o.rmempty = false;
+        if ( o.load('config') == '1' ) {
+            o.inputtitle = _('Stop');
+            o.inputstyle = 'negative';
+        } else {
+            o.inputtitle = _('Start');
+            o.inputstyle = 'positive';
+        };
+        o.onclick = L.bind(
+            function() {
+                o.readonly = true;
+                this.write('config', (this.load('config') == '1')? '0' : '1');
+                uci.save();
+                ui.changes.apply();
+            },
+            o
+        );
 
         o = s.option(form.Value, 'listen_addr', _('Address'));
         o.rmempty=false;

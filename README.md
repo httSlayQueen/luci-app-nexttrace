@@ -26,6 +26,8 @@ make package/luci-app-nexttrace/compile V=s
 
 2. 若使用 OpenClash 等软件的 `Fake-IP` 模式，请勿在 NextTrace WebUI 的目标地址中填写域名，否则会导致 nexttrace 服务进程重启或返回错误结果；请自行寻找让 nexttrace 绕过科学内核的方式，或使用 `Real-IP`
 
+3. 请在使用完毕后点击【停止】终止 nexttrace 后台服务，否则它将向 PoW 服务器每秒请求一次；也可以将 PoW 域名添加到直连规则内（默认域名 `api.nxtrace.org`）
+
 ---
 ## 截图
 
