@@ -38,7 +38,7 @@ service_triggers() {
 }
 
 stop_service() {
-    echo '' > "$LOG"
+    #echo '' > "$LOG"
     return 0
 }
 
