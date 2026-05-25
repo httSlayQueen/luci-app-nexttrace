@@ -68,27 +68,9 @@ jobs:
           echo "==========================="
           echo "status=success" >> $GITHUB_OUTPUT
 
-      - name: Rename files
-        id: rename_files
-        if: steps.move_files.outputs.status == 'success' && !cancelled()
-        run: |
-          set -euo pipefail
-          for file in ${{ github.workspace }}/results/*; do
-            full_name="$(basename "$file")"
-            file_name="${full_name%.*}"
-            file_ext="${full_name##*.}"
-            new_file="${file_name}_all.${file_ext}"
-
-            mv "$file" "${{ github.workspace }}/results/${new_file}"
-          done
-          echo "=== Package files ==="
-          ls -lh ${{ github.workspace }}/results
-          echo "==========================="
-          echo "status=success" >> $GITHUB_OUTPUT
-
       - name: Upload Artifact
         id: upload
-        if: steps.rename_files.outputs.status == 'success' && !cancelled()
+        if: steps.move_files.outputs.status == 'success' && !cancelled()
         uses: actions/upload-artifact@v7
         with:
           name: luci-app-nexttrace-${{ github.ref_name }}-${{ matrix.sdk }}-x86_64
