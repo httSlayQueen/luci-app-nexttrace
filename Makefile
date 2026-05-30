@@ -11,7 +11,7 @@ PKG_LICENSE_FILES := LICENSE
 PKG_BUILD_DEPENDS := nexttrace
 
 LUCI_TITLE         := LuCI Support for nexttrace
-LUCI_DEPENDS       := +luci-compat
+LUCI_DEPENDS       := +luci-base
 LUCI_PKGARCH       := all
 
 include $(TOPDIR)/feeds/luci/luci.mk
